@@ -30,6 +30,30 @@ const TeamView = ({ onLogout }) => {
     }
   }
 
+  // ---- New helpers for due date formatting ----
+  const parseLocalYMD = (str) => {
+    // Expects "YYYY-MM-DD". Parses as local time to avoid UTC offset issues.
+    if (typeof str !== "string") return null
+    const m = str.match(/^(\d{4})-(\d{2})-(\d{2})$/)
+    if (!m) return null
+    const [, y, mo, d] = m.map(Number)
+    // Note: m[0] is the whole string; Number on that is fine but unused.
+    return new Date(y, mo - 1, d)
+  }
+
+  const formatDueDate = (dueDateStr) => {
+    const dt = parseLocalYMD(dueDateStr)
+    if (!dt || isNaN(dt.getTime())) return dueDateStr // fallback to raw string
+    // Include weekday like "Monday" + a readable date
+    return new Intl.DateTimeFormat(undefined, {
+      weekday: "long",
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    }).format(dt)
+  }
+  // --------------------------------------------
+
   useEffect(() => {
     const q = query(collection(db, "documents"), where("visible", "==", true), orderBy("createdAt", "desc"))
 
@@ -51,7 +75,6 @@ const TeamView = ({ onLogout }) => {
   }, {})
 
   const pinnedDocs = documents.filter((doc) => doc.pinned)
-
   const totalDocuments = documents.length
 
   if (loading) {
@@ -150,14 +173,11 @@ const TeamView = ({ onLogout }) => {
 
                   <div className="pt-4 border-t border-gray-700/50">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-sm">
-                      <span className="text-gray-400 font-medium">
-                        Added {new Date(doc.createdAt).toLocaleDateString()}
-                      </span>
                       {doc.dueDate && (
                         <div className="flex items-center gap-1.5 px-2 py-1 bg-cyan-500/10 border border-cyan-500/20 rounded-md w-fit">
                           <Calendar className="w-3.5 h-3.5 text-cyan-400 flex-shrink-0" />
                           <span className="text-cyan-300 font-medium text-xs whitespace-nowrap">
-                            Due {new Date(doc.dueDate).toLocaleDateString()}
+                            Due {formatDueDate(doc.dueDate)}
                           </span>
                         </div>
                       )}
@@ -274,23 +294,15 @@ const TeamView = ({ onLogout }) => {
 
                       <div className="pt-4 border-t border-gray-700/50 space-y-2">
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-sm">
-                          <span className="text-gray-400 font-medium">
-                            Added {new Date(doc.createdAt).toLocaleDateString()}
-                          </span>
                           {doc.dueDate && (
                             <div className="flex items-center gap-1.5 px-2 py-1 bg-cyan-500/10 border border-cyan-500/20 rounded-md w-fit">
                               <Calendar className="w-3.5 h-3.5 text-cyan-400 flex-shrink-0" />
                               <span className="text-cyan-300 font-medium text-xs whitespace-nowrap">
-                                Due {new Date(doc.dueDate).toLocaleDateString()}
+                                Due {formatDueDate(doc.dueDate)}
                               </span>
                             </div>
                           )}
                         </div>
-                        {doc.updatedAt !== doc.createdAt && (
-                          <p className="text-xs text-gray-500 font-medium">
-                            Updated {new Date(doc.updatedAt).toLocaleDateString()}
-                          </p>
-                        )}
                       </div>
                     </div>
                   ))}

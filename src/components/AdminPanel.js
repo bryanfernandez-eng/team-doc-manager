@@ -42,6 +42,37 @@ const AdminPanel = ({ onLogout }) => {
     "Sprint Review Planning Meeting",
   ]
 
+  // ---------- new date helpers (match TeamView) ----------
+  const parseLocalYMD = (str) => {
+    if (typeof str !== "string") return null
+    const m = str.match(/^(\d{4})-(\d{2})-(\d{2})$/)
+    if (!m) return null
+    const y = Number(m[1])
+    const mo = Number(m[2])
+    const d = Number(m[3])
+    return new Date(y, mo - 1, d)
+  }
+
+  const formatDueDate = (dueDateStr) => {
+    const dt = parseLocalYMD(dueDateStr)
+    if (!dt || isNaN(dt.getTime())) return dueDateStr
+    return new Intl.DateTimeFormat(undefined, {
+      weekday: "long",
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    }).format(dt)
+  }
+
+  const localTodayYMD = () => {
+    const dt = new Date()
+    const y = dt.getFullYear()
+    const m = String(dt.getMonth() + 1).padStart(2, "0")
+    const d = String(dt.getDate()).padStart(2, "0")
+    return `${y}-${m}-${d}`
+  }
+  // ------------------------------------------------------
+
   useEffect(() => {
     const q = query(collection(db, "documents"), orderBy("createdAt", "desc"))
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -149,8 +180,8 @@ const AdminPanel = ({ onLogout }) => {
     setShowForm(false)
   }
 
-  // Get documents due today
-  const today = new Date().toISOString().split("T")[0]
+  // Get documents due today (LOCAL yyyy-mm-dd to avoid UTC drift)
+  const today = localTodayYMD()
   const dueToday = documents.filter((doc) => doc.dueDate === today)
 
   // Get pinned documents
@@ -230,7 +261,7 @@ const AdminPanel = ({ onLogout }) => {
                         className="inline-flex items-center gap-2 px-3 py-2 bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 hover:text-cyan-200 hover:bg-cyan-500/20 hover:border-cyan-400/50 rounded-lg text-sm font-medium transition-all duration-200 hover:shadow-md hover:shadow-cyan-500/20"
                       >
                         <ExternalLink className="w-4 h-4" />
-                        <span>Assignment</span>
+                        <span>Document</span>
                       </a>
                     )}
                     {doc.canvasLink && (
@@ -257,7 +288,7 @@ const AdminPanel = ({ onLogout }) => {
                         <div className="flex items-center gap-1.5 px-2 py-1 bg-cyan-500/10 border border-cyan-500/20 rounded-md w-fit">
                           <Calendar className="w-3.5 h-3.5 text-cyan-400 flex-shrink-0" />
                           <span className="text-cyan-300 font-medium text-xs whitespace-nowrap">
-                            Due {new Date(doc.dueDate).toLocaleDateString()}
+                            Due {formatDueDate(doc.dueDate)}
                           </span>
                         </div>
                       )}
@@ -338,7 +369,7 @@ const AdminPanel = ({ onLogout }) => {
                         className="inline-flex items-center gap-2 px-3 py-2 bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 hover:text-cyan-200 hover:bg-cyan-500/20 hover:border-cyan-400/50 rounded-lg text-sm font-medium transition-all duration-200 hover:shadow-md hover:shadow-cyan-500/20"
                       >
                         <ExternalLink className="w-4 h-4" />
-                        <span>Assignment</span>
+                        <span>Document</span>
                       </a>
                     )}
                     {doc.canvasLink && (
@@ -365,7 +396,7 @@ const AdminPanel = ({ onLogout }) => {
                         <div className="flex items-center gap-1.5 px-2 py-1 bg-cyan-500/10 border border-cyan-500/20 rounded-md w-fit">
                           <Calendar className="w-3.5 h-3.5 text-cyan-400 flex-shrink-0" />
                           <span className="text-cyan-300 font-medium text-xs whitespace-nowrap">
-                            Due {new Date(doc.dueDate).toLocaleDateString()}
+                            Due {formatDueDate(doc.dueDate)}
                           </span>
                         </div>
                       )}
@@ -565,7 +596,7 @@ const AdminPanel = ({ onLogout }) => {
                           className="inline-flex items-center gap-2 px-3 py-2 bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 hover:text-cyan-200 hover:bg-cyan-500/20 hover:border-cyan-400/50 rounded-lg text-sm font-medium transition-all duration-200 hover:shadow-md hover:shadow-cyan-500/20"
                         >
                           <ExternalLink className="w-4 h-4" />
-                          <span>Assignment</span>
+                          <span>Document</span>
                         </a>
                       )}
                       {doc.canvasLink && (
@@ -592,7 +623,7 @@ const AdminPanel = ({ onLogout }) => {
                           <div className="flex items-center gap-1.5 px-2 py-1 bg-cyan-500/10 border border-cyan-500/20 rounded-md w-fit">
                             <Calendar className="w-3.5 h-3.5 text-cyan-400 flex-shrink-0" />
                             <span className="text-cyan-300 font-medium text-xs whitespace-nowrap">
-                              Due {new Date(doc.dueDate).toLocaleDateString()}
+                              Due {formatDueDate(doc.dueDate)}
                             </span>
                           </div>
                         )}
