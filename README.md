@@ -1,70 +1,69 @@
-# Getting Started with Create React App
+# FIU Capstone Team Document Manager
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A centralized hub for managing capstone project documents, assignments, and team resources with role-based access control.
 
-## Available Scripts
+## 🎯 Why This Exists
 
-In the project directory, you can run:
+Built to solve **team organization chaos**. As our FIU Capstone team grew, we were drowning in:
+- Scattered documents across Google Drive, Slack, and email
+- Lost assignment deadlines and submission links  
+- Confusion about what's done vs. in-progress
+- No central place for project resources
 
-### `npm start`
+This app gives us **one organized hub** where everyone knows exactly what needs to be done, when it's due, and where to find everything.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## 🛠️ Tech Stack
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- **Frontend**: React 19.1.1 + Tailwind CSS
+- **Backend**: Firebase Firestore
+- **Icons**: Lucide React  
+- **Deployment**: Netlify
 
-### `npm test`
+## 🚀 Quick Start
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+1. **Clone & Install**
+   ```bash
+   git clone <repo-url>
+   cd team-doc-manager
+   npm install
+   ```
 
-### `npm run build`
+2. **Environment Setup** - Create `.env`:
+   ```env
+   REACT_APP_FIREBASE_API_KEY=your_key
+   REACT_APP_FIREBASE_AUTH_DOMAIN=your_domain
+   REACT_APP_FIREBASE_PROJECT_ID=your_project_id
+   REACT_APP_FIREBASE_STORAGE_BUCKET=your_bucket
+   REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+   REACT_APP_FIREBASE_APP_ID=your_app_id
+   
+   REACT_APP_ADMIN_CODE=your_admin_code
+   REACT_APP_TEAM_CODE=your_team_code
+   ```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+3. **Run Locally**
+   ```bash
+   npm start
+   ```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## 🌐 Live Demo
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+**[View Live Application](https://fiucapstone2.netlify.app/)** 
 
-### `npm run eject`
+- **Admin Access**: Full document management
+- **Team Access**: Read-only document viewing
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## 🏗️ Features
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- **Document Management**: Add, edit, categorize assignments
+- **Progress Tracking**: Status updates and due dates  
+- **Role-Based Access**: Admin controls + team view
+- **Search & Filter**: Find documents quickly
+- **Useful Links**: Centralized project resources
+- **Real-time Sync**: Firebase-powered live updates
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Perfect for capstone teams, student projects, or any group needing organized document collaboration.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+---
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+**Built by FIU Capstone Team | Deployed on Netlify**
