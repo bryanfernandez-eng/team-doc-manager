@@ -220,7 +220,6 @@ const TeamView = ({ onLogout }) => {
   }, {});
 
   const pinnedDocs = filteredDocs.filter((doc) => doc.pinned);
-  const totalDocuments = filteredDocs.length;
 
   const statusPill = (status) => {
     const s =
@@ -386,7 +385,7 @@ const TeamView = ({ onLogout }) => {
                         className="inline-flex items-center gap-2 px-3 py-2 bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 hover:text-cyan-200 hover:bg-cyan-500/20 hover:border-cyan-400/50 rounded-lg text-sm font-medium transition-all duration-200 hover:shadow-md hover:shadow-cyan-500/20"
                       >
                         <ExternalLink className="w-4 h-4" />
-                        <span>Assignment</span>
+                        <span>Document</span>
                       </a>
                     )}
                     {doc.canvasLink && (
