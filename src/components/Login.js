@@ -14,7 +14,6 @@ const Login = ({ onLogin }) => {
     setIsLoading(true)
     setError("")
 
-    // Simulate loading for better UX
     await new Promise((resolve) => setTimeout(resolve, 1000))
 
     if (accessCode === process.env.REACT_APP_ADMIN_CODE) {
@@ -30,37 +29,25 @@ const Login = ({ onLogin }) => {
 
   return (
     <div className="min-h-screen bg-black flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Enhanced animated background */}
       <div className="absolute inset-0 overflow-hidden">
-        {/* Grid pattern */}
         <div className="absolute inset-0 bg-[linear-gradient(rgba(0,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,255,0.03)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
-
-        {/* Floating orbs */}
         <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
         <div className="absolute top-3/4 left-3/4 w-48 h-48 bg-pink-500/10 rounded-full blur-3xl animate-pulse delay-2000"></div>
-
-        {/* Scanning lines */}
         <div className="absolute inset-0">
           <div className="absolute w-full h-px bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent animate-scan"></div>
         </div>
       </div>
 
-      {/* Main login container */}
       <div className="relative z-10 w-full max-w-md">
-        {/* Outer glow container */}
         <div className="relative">
           <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 via-purple-500/20 to-pink-500/20 rounded-2xl blur-xl animate-pulse"></div>
 
-          {/* Main card */}
           <div className="relative bg-gray-900/90 backdrop-blur-xl border border-cyan-500/30 rounded-2xl shadow-2xl overflow-hidden">
-            {/* Top accent line */}
             <div className="h-1 bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400"></div>
 
             <div className="p-6 sm:p-8 lg:p-10">
-              {/* Header section */}
               <div className="text-center mb-6 sm:mb-8">
-                {/* Logo/Icon */}
                 <div className="relative mx-auto w-16 h-16 sm:w-20 sm:h-20 mb-4 sm:mb-6">
                   <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-purple-400 rounded-full animate-spin-slow"></div>
                   <div className="absolute inset-1 bg-gray-900 rounded-full flex items-center justify-center">
@@ -68,21 +55,16 @@ const Login = ({ onLogin }) => {
                   </div>
                 </div>
 
-                {/* Title */}
                 <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2">
                   <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
                     FIU CAPSTONE TEAM
                   </span>
                 </h1>
 
-                {/* Subtitle */}
                 <p className="text-gray-300 text-sm sm:text-base mb-3 sm:mb-4">Capstone 2 Document Hub</p>
-
-                {/* Accent line */}
                 <div className="w-20 sm:w-24 h-0.5 bg-gradient-to-r from-cyan-400 to-purple-400 mx-auto rounded-full"></div>
               </div>
 
-              {/* Form */}
               <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
                 <div className="space-y-2">
                   <label htmlFor="accessCode" className="block text-sm font-medium text-cyan-300 flex items-center">
@@ -101,8 +83,6 @@ const Login = ({ onLogin }) => {
                       required
                       disabled={isLoading}
                     />
-
-                    {/* Show/Hide password button */}
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
@@ -111,13 +91,10 @@ const Login = ({ onLogin }) => {
                     >
                       {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                     </button>
-
-                    {/* Input glow effect */}
                     <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-cyan-500/10 to-purple-500/10 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                   </div>
                 </div>
 
-                {/* Error message */}
                 {error && (
                   <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 text-red-300 text-center animate-shake">
                     <Lock className="w-5 h-5 mx-auto mb-2" />
@@ -125,7 +102,6 @@ const Login = ({ onLogin }) => {
                   </div>
                 )}
 
-                {/* Submit button */}
                 <button
                   type="submit"
                   disabled={isLoading || !accessCode.trim()}
@@ -149,10 +125,8 @@ const Login = ({ onLogin }) => {
                 </button>
               </form>
 
-              {/* Footer info */}
               <div className="mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-gray-700/50">
                 <div className="text-center space-y-3 sm:space-y-4">
-                  {/* Access types */}
                   <div className="flex items-center justify-center space-x-4 sm:space-x-6 text-sm">
                     <div className="flex items-center space-x-2">
                       <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
@@ -165,8 +139,6 @@ const Login = ({ onLogin }) => {
                       <span className="text-gray-300">Team</span>
                     </div>
                   </div>
-
-                  {/* Security notice */}
                   <p className="text-xs text-gray-500 flex items-center justify-center space-x-2">
                     <Shield className="w-3 h-3" />
                     <span>Secure Authentication • Powered by Firebase</span>
@@ -178,7 +150,6 @@ const Login = ({ onLogin }) => {
         </div>
       </div>
 
-      {/* Custom styles */}
       <style jsx>{`
         @keyframes scan {
           0% { transform: translateY(-100vh); }
@@ -193,15 +164,9 @@ const Login = ({ onLogin }) => {
           25% { transform: translateX(-5px); }
           75% { transform: translateX(5px); }
         }
-        .animate-scan {
-          animation: scan 3s linear infinite;
-        }
-        .animate-spin-slow {
-          animation: spin-slow 8s linear infinite;
-        }
-        .animate-shake {
-          animation: shake 0.5s ease-in-out;
-        }
+        .animate-scan { animation: scan 3s linear infinite; }
+        .animate-spin-slow { animation: spin-slow 8s linear infinite; }
+        .animate-shake { animation: shake 0.5s ease-in-out; }
       `}</style>
     </div>
   )
