@@ -38,6 +38,7 @@ import {
   ChevronRight,
   ChevronDown,
   Shield,
+  Users,
 } from "lucide-react"
 
 const STATUSES = ["In progress", "Done / Ready to submit"]
@@ -82,7 +83,7 @@ const Collapsible = ({ open, children }) => (
   </div>
 )
 
-const AdminPanel = ({ onLogout }) => {
+const AdminPanel = ({ onLogout, onNavigateToBoard }) => {
   const [documents, setDocuments] = useState([])
   const [showForm, setShowForm] = useState(false)
   const [editingDoc, setEditingDoc] = useState(null)
@@ -500,6 +501,14 @@ const AdminPanel = ({ onLogout }) => {
 
             <div className="flex gap-2 sm:gap-3 flex-wrap">
               <button
+                onClick={onNavigateToBoard}
+                className="bg-purple-500/10 border border-purple-500/30 text-purple-300 px-4 sm:px-5 py-2.5 rounded-lg hover:bg-purple-500/20 hover:border-purple-400/50 hover:shadow-lg hover:shadow-purple-500/20 flex items-center gap-2 transition-all duration-300"
+                title="Open Ticket Board"
+              >
+                <Users className="w-4 h-4" />
+                <span className="text-sm sm:text-[15px]">Board</span>
+              </button>
+              <button
                 onClick={() => setShowLinksModal(true)}
                 className="bg-white/5 border border-white/15 text-white/80 px-4 sm:px-5 py-2.5 rounded-lg hover:bg-white/10 hover:border-white/25 hover:shadow-lg hover:shadow-white/10 flex items-center gap-2 transition-all duration-300"
                 title="Edit Useful Links"
@@ -582,7 +591,7 @@ const AdminPanel = ({ onLogout }) => {
                     ))}
                 </div>
               ) : (
-                <p className="text-gray-400 text-sm">No links yet—click “Useful Links” in the header to add your repo and resources.</p>
+                <p className="text-gray-400 text-sm">No links yet—click "Useful Links" in the header to add your repo and resources.</p>
               )}
             </div>
           </Collapsible>
@@ -905,7 +914,7 @@ const AdminPanel = ({ onLogout }) => {
             </div>
 
             <p className="text-xs text-gray-400 mt-3">
-              Tip: Add “GitHub Repo”, “Design Doc”, “Staging”, “API Docs”, “Drive Folder”, etc.
+              Tip: Add "GitHub Repo", "Design Doc", "Staging", "API Docs", "Drive Folder", etc.
             </p>
           </div>
         </div>
