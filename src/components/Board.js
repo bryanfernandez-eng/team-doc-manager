@@ -33,6 +33,8 @@ import {
   PauseCircle,
   Archive,
   FileText,
+  UserPlus,
+  Trash,
 } from "lucide-react"
 
 const COLUMNS = [
@@ -98,6 +100,9 @@ const Board = ({ isAdmin, onBack }) => {
           : Array.isArray(formData.tags) ? formData.tags : [],
         createdAt: editingTicket ? editingTicket.createdAt : new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        // Add flags for team-created tickets
+        createdByTeam: !isAdmin, // Set to true if created by team member
+        deletedByTeam: false, // Initialize as false
       }
 
       if (editingTicket) {
@@ -124,13 +129,40 @@ const Board = ({ isAdmin, onBack }) => {
   }
 
   const deleteTicket = async (ticketId) => {
-    if (window.confirm("Are you sure you want to delete this ticket?")) {
-      try {
-        await deleteDoc(doc(db, "tickets", ticketId))
-      } catch (error) {
-        console.error("Error deleting ticket:", error)
-        alert("Error deleting ticket. Please try again.")
+    if (isAdmin) {
+      // Admin can actually delete tickets
+      if (window.confirm("Are you sure you want to permanently delete this ticket?")) {
+        try {
+          await deleteDoc(doc(db, "tickets", ticketId))
+        } catch (error) {
+          console.error("Error deleting ticket:", error)
+          alert("Error deleting ticket. Please try again.")
+        }
       }
+    } else {
+      // Team members can only "soft delete" (hide from their view)
+      if (window.confirm("Are you sure you want to remove this ticket?")) {
+        try {
+          await updateDoc(doc(db, "tickets", ticketId), {
+            deletedByTeam: true,
+            updatedAt: new Date().toISOString(),
+          })
+        } catch (error) {
+          console.error("Error hiding ticket:", error)
+          alert("Error removing ticket. Please try again.")
+        }
+      }
+    }
+  }
+
+  const restoreTicket = async (ticketId) => {
+    try {
+      await updateDoc(doc(db, "tickets", ticketId), {
+        deletedByTeam: false,
+        updatedAt: new Date().toISOString(),
+      })
+    } catch (error) {
+      console.error("Error restoring ticket:", error)
     }
   }
 
@@ -185,6 +217,9 @@ const Board = ({ isAdmin, onBack }) => {
   }
 
   const filteredTickets = tickets.filter(ticket => {
+    // Hide tickets deleted by team from team view, but show all to admin
+    if (!isAdmin && ticket.deletedByTeam) return false
+    
     if (!isAdmin && !ticket.visible) return false
     
     const matchesSearch = searchQuery.trim() === "" || 
@@ -213,15 +248,47 @@ const Board = ({ isAdmin, onBack }) => {
     const IconComponent = COLUMNS.find(col => col.id === ticket.status)?.icon || Archive
     
     return (
-      <div className="bg-gray-900/60 border border-cyan-500/20 rounded-xl p-4 hover:border-cyan-400/40 transition-all duration-200 group backdrop-blur-sm">
+      <div className={`bg-gray-900/60 border rounded-xl p-4 hover:border-cyan-400/40 transition-all duration-200 group backdrop-blur-sm ${
+        ticket.deletedByTeam ? 'border-red-500/40 bg-red-900/20' : 'border-cyan-500/20'
+      }`}>
         <div className="flex items-start justify-between mb-3">
           <h4 className="font-semibold text-white text-sm leading-tight break-words flex-1 group-hover:text-cyan-50 transition-colors">
             {ticket.title}
           </h4>
           <div className="flex items-center gap-1 ml-2 flex-shrink-0">
-          
+            {/* Admin-only flags */}
+            {isAdmin && (
+              <div className="flex gap-1 items-center">
+                {ticket.createdByTeam && (
+                  <div 
+                    className="p-1 rounded bg-blue-500/20 border border-blue-500/30" 
+                    title="Created by team member"
+                  >
+                    <UserPlus className="w-3 h-3 text-blue-400" />
+                  </div>
+                )}
+                {ticket.deletedByTeam && (
+                  <div 
+                    className="p-1 rounded bg-orange-500/20 border border-orange-500/30" 
+                    title="Marked for deletion by team"
+                  >
+                    <Trash className="w-3 h-3 text-orange-400" />
+                  </div>
+                )}
+              </div>
+            )}
+            
             {isAdmin && (
               <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                {ticket.deletedByTeam && (
+                  <button
+                    onClick={() => restoreTicket(ticket.id)}
+                    className="p-1 rounded text-green-400 hover:bg-green-500/20 transition-colors"
+                    title="Restore ticket"
+                  >
+                    <CheckCircle2 className="w-3 h-3" />
+                  </button>
+                )}
                 <button
                   onClick={() => toggleVisibility(ticket.id, ticket.visible)}
                   className={`p-1 rounded text-xs transition-colors ${
@@ -243,7 +310,27 @@ const Board = ({ isAdmin, onBack }) => {
                 <button
                   onClick={() => deleteTicket(ticket.id)}
                   className="p-1 rounded text-red-400 hover:bg-red-500/20 transition-colors"
-                  title="Delete ticket"
+                  title="Delete ticket permanently"
+                >
+                  <Trash2 className="w-3 h-3" />
+                </button>
+              </div>
+            )}
+            
+            {/* Team members can only edit their own tickets and soft-delete */}
+            {!isAdmin && (
+              <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button
+                  onClick={() => startEditing(ticket)}
+                  className="p-1 rounded text-blue-400 hover:bg-blue-500/20 transition-colors"
+                  title="Edit ticket"
+                >
+                  <Edit className="w-3 h-3" />
+                </button>
+                <button
+                  onClick={() => deleteTicket(ticket.id)}
+                  className="p-1 rounded text-red-400 hover:bg-red-500/20 transition-colors"
+                  title="Remove ticket (hide from your view)"
                 >
                   <Trash2 className="w-3 h-3" />
                 </button>
@@ -265,6 +352,11 @@ const Board = ({ isAdmin, onBack }) => {
               {!isAdmin && !ticket.visible && (
                 <span className="px-2 py-0.5 rounded text-xs font-medium border bg-red-500/15 border-red-500/30 text-red-400">
                   Hidden
+                </span>
+              )}
+              {isAdmin && ticket.deletedByTeam && (
+                <span className="px-2 py-0.5 rounded text-xs font-medium border bg-orange-500/15 border-orange-500/30 text-orange-400">
+                  Team Deleted
                 </span>
               )}
             </div>
@@ -316,7 +408,6 @@ const Board = ({ isAdmin, onBack }) => {
                 );
               })}
             </select>
-          
           </div>
         </div>
       </div>
@@ -357,15 +448,14 @@ const Board = ({ isAdmin, onBack }) => {
             </div>
 
             <div className="flex gap-3 items-center flex-wrap">
-              {isAdmin && (
-                <button
-                  onClick={() => setShowForm(true)}
-                  className="bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 px-4 py-2 rounded-lg hover:bg-cyan-500/20 hover:border-cyan-400/50 flex items-center gap-2 transition-all duration-300"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span className="hidden sm:inline">Add Ticket</span>
-                </button>
-              )}
+              {/* Both admin and team can create tickets now */}
+              <button
+                onClick={() => setShowForm(true)}
+                className="bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 px-4 py-2 rounded-lg hover:bg-cyan-500/20 hover:border-cyan-400/50 flex items-center gap-2 transition-all duration-300"
+              >
+                <Plus className="w-4 h-4" />
+                <span className="hidden sm:inline">Add Ticket</span>
+              </button>
             </div>
           </div>
 
@@ -554,15 +644,17 @@ const Board = ({ isAdmin, onBack }) => {
                 />
               </div>
 
-              <label className="inline-flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  checked={formData.visible}
-                  onChange={(e) => setFormData({ ...formData, visible: e.target.checked })}
-                  className="w-4 h-4 text-cyan-400 bg-gray-700 border-cyan-500/30 rounded focus:ring-cyan-400"
-                />
-                <span className="text-sm text-cyan-300 font-medium">Visible to team</span>
-              </label>
+              {isAdmin && (
+                <label className="inline-flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    checked={formData.visible}
+                    onChange={(e) => setFormData({ ...formData, visible: e.target.checked })}
+                    className="w-4 h-4 text-cyan-400 bg-gray-700 border-cyan-500/30 rounded focus:ring-cyan-400"
+                  />
+                  <span className="text-sm text-cyan-300 font-medium">Visible to team</span>
+                </label>
+              )}
 
               <div className="flex gap-3 pt-4">
                 <button
